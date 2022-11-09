@@ -1,10 +1,10 @@
 .summary {
   text-align: center;
   max-width: 80rem;
-  font-size: 1.8rem;
+  font-size: 1.5rem;
   width: 90%;
   margin: auto;
-  margin-top: -10rem;
+  margin-top: -18rem;
   position: relative;
   background-color: var(--color-dark-blue);
   color: white;
@@ -14,7 +14,30 @@
 }
 
 .summary h2 {
-  font-size: 3.5rem;
+  font-size: 2.5rem;
   margin-top: 0;
   margin-bottom: 2rem;
+}
+
+@media screen and (min-width: 768px) {
+  .summary {
+    font-size: 1.8rem;
+    margin-top: -12rem;
+  }
+
+  .summary h2 {
+    font-size: 3.5rem;
+  }
+}
+
+@media screen and (min-width: 1024px) {
+  .summary {
+    margin-top: -40rem;
+  }
+}
+
+@media screen and (min-width: 1400px) {
+  .summary {
+    margin-top: -45rem;
+  }
 }
