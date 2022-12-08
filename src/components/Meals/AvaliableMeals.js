@@ -1,42 +1,87 @@
-import classes from './AvaliableMeals.module.css';
-import Card from '../UI/Card'
-import MealItem from './MealItem/MealItem';
+import { useEffect, useState } from "react";
+import useHttp from "../../hooks/use-http";
 
-const DUMMY_MEALS = [
-    {
-      id: 'm1',
-      name: 'Espresso',
-      description: 'Our smooth signature Espresso Roast with rich flavor and caramelly sweetness is at the very heart of everything we do.',
-      price: 2.99
-    },
-    {
-      id: 'm2',
-      name: 'Caffè Americano',
-      description: 'Espresso shots topped with hot water create a light layer of crema culminating in this wonderfully rich cup with depth and nuance.',
-      price: 3.49
-    },
-    {
-      id: 'm3',
-      name: 'Cappuccino',
-      description: 'Dark, rich espresso lies in wait under a smoothed and stretched layer of thick milk foam. An alchemy of barista artistry and craft.',
-      price: 4.49
-    },
-    {
-      id: 'm4',
-      name: 'Caffè Latte',
-      description: 'Our dark, rich espresso balanced with steamed milk and a light layer of foam. A perfect milk-forward warm-up.',
-      price: 4.49
-    },
-  ];
+import classes from "./AvaliableMeals.module.css";
+import Card from "../UI/Card";
+import MealItem from "./MealItem/MealItem";
 
 const AvaliableMeals = () => {
-    const mealList = DUMMY_MEALS.map(meal => <MealItem key={meal.id} id={meal.id} name={meal.name} description={meal.description} price={meal.price} />);
+  const [menu, setMenu] = useState([]);
+  const { isLoading, error, sendRequest: sendMenuRequest } = useHttp();
 
-    return <section className={classes.meals}>
-            <Card>
-              <ul>{mealList}</ul>  
-            </Card>
+  useEffect(() => {
+    const createMenuList = (menuData) => {
+      const loadedMenu = [];
+
+      for (const key in menuData) {
+        loadedMenu.push({
+          id: key,
+          name: menuData[key].name,
+          description: menuData[key].description,
+          price: menuData[key].price,
+        });
+      }
+
+      setMenu(loadedMenu);
+    };
+
+    sendMenuRequest(
+      {
+        url: "https://react-food-order-991cc-default-rtdb.europe-west1.firebasedatabase.app/meals.json",
+      },
+      createMenuList
+    );
+  }, [sendMenuRequest]);
+
+  const spinner = (
+    <div className={classes["lds-roller"]}>
+      <div></div>
+      <div></div>
+      <div></div>
+      <div></div>
+      <div></div>
+      <div></div>
+      <div></div>
+      <div></div>
+    </div>
+  );
+
+  let content;
+
+  if (isLoading) {
+    content = spinner;
+  };
+
+  if (menu.length > 0) {
+    let menuList = (
+      <ul>
+        {menu.map((meal) => (
+            <MealItem
+              key={meal.id}
+              id={meal.id}
+              name={meal.name}
+              description={meal.description}
+              price={meal.price}
+            />
+          ))}
+      </ul>
+    );
+    
+    content = menuList;
+  }
+
+  if (error) {
+    const errorText = <div className={classes["error-text"]}>{error}</div>
+    content = errorText;
+  }
+
+  return (
+    <section className={classes.meals}>
+      <Card>
+        {content}
+      </Card>
     </section>
-}
+  );
+};
 
 export default AvaliableMeals;
